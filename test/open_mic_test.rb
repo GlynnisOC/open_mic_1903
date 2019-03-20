@@ -14,33 +14,40 @@ class OpenMicTest < Minitest::Test
     @open_mic = OpenMic.new({location: "Comedy Works", date: "11-20-18"})
   end
 
-  
+  def test_it_exists
+    assert_instance_of OpenMic, @open_mic
+  end
+
+  def test_it_has_attributes
+    assert_equal "Comedy Works", @open_mic.location
+    assert_equal "11-20-18", @open_mic.date
+  end
+
+  def test_it_begins_without_performers
+    assert_equal [], @open_mic.performers
+  end
+
+  def test_it_welcomes_performers
+    @open_mic.welcome(@sal)
+    @open_mic.welcome(@ali)
+    assert_equal [@sal, @ali], @open_mic.performers
+  end
+
+  def test_user_does_not_tell_repeated_jokes
+    @open_mic.welcome(@sal)
+    @open_mic.welcome(@ali)
+    @ali.learn(@joke_1)
+    @ali.learn(@joke_2)
+    assert_equal false, @open_mic.repeated_jokes?
+  end
+
+  def test_repeated_jokes_now_returns_true_as_one_user_told_same_joke
+    @open_mic.welcome(@sal)
+    @open_mic.welcome(@ali)
+    @ali.learn(@joke_1)
+    @ali.learn(@joke_2)
+    @ali.tell(@sal, @joke_1)
+    # require 'pry'; binding.pry
+    assert_equal true, @open_mic.repeated_jokes?
+  end
 end
-
-# pry(main)> open_mic.location
-# # => "Comedy Works"
-#
-# pry(main)> open_mic.date
-# # => "11-20-18"
-#
-# pry(main)> open_mic.performers
-# # => []
-#
-# pry(main)> open_mic.welcome(sal)
-#
-# pry(main)> open_mic.welcome(ali)
-#
-# pry(main)> open_mic.performers
-# # => [#<User:0x00007fe8fda12a00...>, #<User:0x00007fe8ff0dddc0...>]
-
-# pry(main)> ali.learn(joke_1)
-#
-# pry(main)> ali.learn(joke_2)
-#
-# pry(main)> open_mic.repeated_jokes?
-# # => false
-#
-# pry(main)> ali.tell(sal, joke_1)
-#
-# pry(main)> open_mic.repeated_jokes?
-# # => true
